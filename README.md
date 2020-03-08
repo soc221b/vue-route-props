@@ -16,6 +16,8 @@ yarn add vue-route-props
 
 ## Usage
 
+[![Edit vue-route-props](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-route-props-vbuj1?fontsize=14&hidenavigation=1&theme=dark)
+
 ```javascript
 import Vue from 'vue'
 import VueRouter from 'vue-router'
