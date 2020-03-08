@@ -212,6 +212,10 @@ const validateType = ({
     for (const constructor of normalizedProp.type.filter(type => type !== null)) {
       result = result || Object.getPrototypeOf(value).constructor === constructor;
     }
+
+    if (normalizedProp.type.length === 0) {
+      result = true;
+    }
   }
 
   if (result === false) {
