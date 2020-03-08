@@ -52,11 +52,11 @@ new Vue({
 
 ### Prop Types
 
-https://vuejs.org/v2/api/#props
+Same as https://vuejs.org/v2/api/#props.
 
 But the `type` option can ONLY be the following constructors: `String`, `Number`, `Boolean`, `Array`, `Object`, and the `null`.
 
-In order to keep the value's type, you need to use `JSON.stringify` to add query at all times:
+In order to keep values' type, you need to use `JSON.stringify` to add query at all times:
 
 ```javascript
 this.$router.push({
