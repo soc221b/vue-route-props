@@ -5,7 +5,7 @@ Automatically bind vue-router query, Same as the props API in Vue.
 > Only stringifiable types are supported.
 
 [![npm version](https://img.shields.io/npm/v/vue-route-props)](https://www.npmjs.com/package/vue-route-props)
-[![CI](https://github.com/iendeavor/vue-route-props/workflows/Node.js%20CI/badge.svg?branch=develop)](https://github.com/iendeavor/vue-route-props/actions?query=workflow%3A%22Node.js+CI%22+branch%3Adevelop)
+[![CI](https://github.com/iendeavor/vue-route-props/workflows/CI/badge.svg?branch=develop)](https://github.com/iendeavor/vue-route-props/actions?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/iendeavor/vue-route-props/branch/develop/graph/badge.svg)](https://codecov.io/gh/iendeavor/vue-route-props)
 
 ## Install
