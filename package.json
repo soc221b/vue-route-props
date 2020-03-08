@@ -6,6 +6,12 @@
   "module": "dist/vue-route-props.esm.min.js",
   "unpkg": "dist/vue-route-props.min.js",
   "jsdelivr": "dist/vue-route-props.js",
+  "keywords": [
+    "vue",
+    "vue-router",
+    "props",
+    "validation"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "node scripts/build.js",
