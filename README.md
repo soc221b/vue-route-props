@@ -28,12 +28,23 @@ Vue.use(VueRouteProps)
 
 new Vue({
   routeProps: {
-    title: String,
-  },
-
-  created () {
-    console.log(this.title)
-  },
+    optional: {
+      type: String,
+      default: "an optional routeProp with default value"
+    },
+    required: {
+      required: true,
+      type: String
+    },
+    multiple: {
+      type: [String, Array, Object]
+    },
+    validator: {
+      validator(value) {
+        return value === "with custom validator";
+      }
+    }
+  }
 })
 ```
 
@@ -41,24 +52,17 @@ new Vue({
 
 ### Prop Types
 
+https://vuejs.org/v2/api/#props
+
+But the `type` option can ONLY be the following constructors: `String`, `Number`, `Boolean`, `Array`, `Object`, and the `null`.
+
+In order to keep the value's type, you need to use `JSON.stringify` to add query at all times:
+
 ```javascript
-new Vue({
-  routeProps: {
-    title: {
-      required: true,
-      type: String,
-    },
-    likes: Number,
-    isPublished: {
-      type: Boolean,
-      default: false,
-    },
-    publishAt: {
-      type: [Number, null],
-      validator (value) {
-        return value === null || value >= Date.now()
-      },
-    }
+this.$router.push({
+  query: {
+    willBeString: 0, // wrong
+    willBeNumber: JSON.stringify(0), // expected
   }
 })
 ```
