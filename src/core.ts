@@ -70,10 +70,10 @@ export const normalize = ({
   key,
 }) => {
   const normalizedProp = {
-    default: () => void 0,
+    default: function returnUndefined () { return void 0 },
     required: false,
     type: [],
-    validator: () => true,
+    validator: function returnTrue () { return true },
   }
 
   const prop = routeProps[key]
