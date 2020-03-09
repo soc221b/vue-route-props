@@ -82,7 +82,7 @@ export const normalize = ({
     normalizedProp.type = prop
   }
 
-  else if (toString(prop) === '[object String]') {
+  else if (toString(prop) === '[object String]' || toString(prop) === '[object Null]') {
     normalizedProp.type = [prop]
   }
 
