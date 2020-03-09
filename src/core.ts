@@ -98,11 +98,7 @@ export const normalize = ({
 
   const prop = routeProps[key]
 
-  if (toString(prop) === '[object Array]') {
-    normalizedProp.type = stringifyableTypes
-  }
-
-  else if (toString(prop) === '[object String]' || toString(prop) === '[object Null]') {
+  if (toString(prop) === '[object String]' || toString(prop) === '[object Null]') {
     normalizedProp.type = [prop]
   }
 
@@ -111,6 +107,9 @@ export const normalize = ({
       normalizedProp.type = prop.type
     } else if (prop.type !== void 0) {
       normalizedProp.type = [prop.type]
+    }
+    if (normalizedProp.type.length === 0) {
+      normalizedProp.type = stringifyableTypes
     }
 
     if (toString(prop.required) === '[object Boolean]') {
