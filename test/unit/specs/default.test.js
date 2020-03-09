@@ -82,4 +82,54 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(0)
     expect(vm.prop).toEqual('query')
   })
+
+  it(`should not use object type as default value.`, () => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          default: {}
+        }
+      }
+    })
+
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([
+      `[VueRouteProps warn]: `,
+      `Invalid default value for routeProp "prop": routeProps with type Object/Array must use a factory function to return the default value.`
+    ])
+  })
+
+  it(`should not use array type as default value.`, () => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          default: []
+        }
+      }
+    })
+
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([
+      `[VueRouteProps warn]: `,
+      `Invalid default value for routeProp "prop": routeProps with type Object/Array must use a factory function to return the default value.`
+    ])
+  })
+
+  it(`should get default value from given function`, () => {
+    const value = {}
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          default () {
+            return value
+          }
+        }
+      }
+    })
+
+    expect(vm.prop).toBe(value)
+  })
 })
