@@ -4,6 +4,8 @@ import {
   toString,
 } from './utils.ts'
 
+const stringifyableTypes = [null, Boolean, String, Number, Array, Object]
+
 const createMixin = () => {
   return {
     data () {
@@ -21,7 +23,7 @@ const createMixin = () => {
           context: this,
         })
 
-        for (const routeProp in this.$options.routeProps) {
+        for (const routeProp in newData) {
           this[routeProp] = newData[routeProp]
         }
       },
@@ -34,6 +36,9 @@ export const generateData = ({
   route,
   context,
 }) => {
+  routeProps = normalizeRouteProps({
+    routeProps
+  })
   const data = {}
 
   for (const key in routeProps) {
@@ -65,6 +70,21 @@ export const generateData = ({
   return data
 }
 
+const normalizeRouteProps = ({
+  routeProps,
+}) => {
+  let normalizedRouteProps = routeProps
+
+  if (toString(routeProps) === '[object Array]') {
+    normalizedRouteProps = {}
+    for (const routeProp of routeProps) {
+      normalizedRouteProps[routeProp] = {}
+    }
+  }
+
+  return normalizedRouteProps
+}
+
 export const normalize = ({
   routeProps,
   key,
@@ -79,7 +99,7 @@ export const normalize = ({
   const prop = routeProps[key]
 
   if (toString(prop) === '[object Array]') {
-    normalizedProp.type = prop
+    normalizedProp.type = stringifyableTypes
   }
 
   else if (toString(prop) === '[object String]' || toString(prop) === '[object Null]') {
@@ -203,10 +223,10 @@ export const validateType = ({
     for (const constructor of normalizedProp.type.filter(type => type !== null)) {
       result = result || Object.getPrototypeOf(value).constructor === constructor
     }
+  }
 
-    if (normalizedProp.type.length === 0) {
-      result = true
-    }
+  if (normalizedProp.type.length === 0) {
+    result = true
   }
 
   if (result === false) {
