@@ -28,8 +28,10 @@
   "author": "Ernest <iattempt.net@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-typescript": "^7.8.3",
+    "@babel/runtime": "^7.8.7",
     "babel-jest": "^25.1.0",
     "jest": "^25.1.0",
     "rimraf": "^3.0.2",
