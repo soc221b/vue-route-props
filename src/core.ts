@@ -117,37 +117,36 @@ export const validate = ({
   value,
   context,
 }) => {
-  validateDefault({
-    routeProps,
-    key,
-    context,
-  })
-
   const normalizedProp = normalize({
     routeProps,
     key,
   })
 
-  validateRequired({
-    normalizedProp,
-    key,
-    value,
-    context,
-  })
-
-  validateType({
-    normalizedProp,
-    key,
-    value,
-    context,
-  })
-
-  validateCustom({
-    normalizedProp,
-    key,
-    value,
-    context,
-  })
+  return (
+    validateDefault({
+      routeProps,
+      key,
+      context,
+    })
+    && validateRequired({
+      normalizedProp,
+      key,
+      value,
+      context,
+    })
+    && validateType({
+      normalizedProp,
+      key,
+      value,
+      context,
+    })
+    && validateCustom({
+      normalizedProp,
+      key,
+      value,
+      context,
+    })
+  )
 }
 
 export const validateDefault = ({
@@ -161,7 +160,9 @@ export const validateDefault = ({
       `Invalid default value for routeProp "${key}": routeProps with type Object/Array must use a factory function to return the default value.`,
       context,
     )
+    return false
   }
+  return true
 }
 
 export const validateRequired = ({
@@ -175,7 +176,9 @@ export const validateRequired = ({
       `Missing required routeProp: "${key}"`,
       context,
     )
+    return false
   }
+  return true
 }
 
 export const validateType = ({
@@ -222,7 +225,9 @@ export const validateType = ({
       `Invalid routeProp: type check failed for routeProp "${key}". Expected ${type.join(', ')}, got ${valueType} with value ${value}.`,
       context,
     )
+    return false
   }
+  return true
 }
 
 export const validateCustom = ({
@@ -239,7 +244,9 @@ export const validateCustom = ({
       `Invalid routeProp: custom validator check failed for routeProp "${key}".`,
       context,
     )
+    return false
   }
+  return true
 }
 
 export default createMixin
