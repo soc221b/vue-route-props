@@ -238,7 +238,7 @@ export const validateCustom = ({
 }) => {
   value = value !== void 0 ? value : normalizedProp.default()
   if (
-    normalizedProp.validator(value, key) === false
+    !normalizedProp.validator(value, key)
   ) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${key}".`,
