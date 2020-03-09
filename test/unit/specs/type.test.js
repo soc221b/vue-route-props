@@ -85,7 +85,27 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  test.each([...validValueMapping.values(), null])(`should allow user to specify multitple types as type option.`, async (value) => {
+  test.each([...validValueMapping.values()])(`should not do type validation.`, async (value) => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {}
+      }
+    })
+    spy.mockClear()
+    vm.$router.replace({
+      query: {
+        prop: JSON.stringify(value)
+      }
+    })
+    await Promise.resolve()
+
+    expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
+    expect(vm.prop).toEqual(value)
+    expect(console.error).toHaveBeenCalledTimes(0)
+  })
+
+  test.each([...validValueMapping.values()])(`should allow user to specify multitple types as type option.`, async (value) => {
     vm = new Vue({
       router,
       routeProps: {
