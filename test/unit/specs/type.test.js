@@ -126,4 +126,50 @@ describe('required', () => {
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
+
+  it(`should throw error when given value is not expected type (specify type as prop value).`, async () => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: Boolean,
+      }
+    })
+    spy.mockClear()
+    vm.$router.replace({
+      query: {
+        prop: JSON.stringify(1)
+      }
+    })
+    await Promise.resolve()
+
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([
+      `[VueRouteProps warn]: `,
+      `Invalid routeProp: type check failed for routeProp "prop". Expected Boolean, got Number with value 1.`
+    ])
+  })
+
+  it(`should throw error when given value is expected type (specify type with type option).`, async () => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          type: Boolean,
+        }
+      }
+    })
+    spy.mockClear()
+    vm.$router.replace({
+      query: {
+        prop: JSON.stringify(1)
+      }
+    })
+    await Promise.resolve()
+
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([
+      `[VueRouteProps warn]: `,
+      `Invalid routeProp: type check failed for routeProp "prop". Expected Boolean, got Number with value 1.`
+    ])
+  })
 })

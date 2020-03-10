@@ -98,11 +98,11 @@ export const normalize = ({
 
   const prop = routeProps[key]
 
-  if (toString(prop) === '[object String]' || toString(prop) === '[object Null]') {
+  if (toString(prop) !== '[object Object]') {
     normalizedProp.type = [prop]
   }
 
-  else if (toString(prop) === '[object Object]') {
+  else {
     if (toString(prop.type) === '[object Array]') {
       normalizedProp.type = prop.type
     } else if (prop.type !== void 0) {
