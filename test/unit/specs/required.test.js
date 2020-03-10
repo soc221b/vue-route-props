@@ -45,7 +45,7 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(1)
   })
 
-  it(`should not log error when requiredProp's required option is true and a corresponding query is given.`, () => {
+  it(`should not log error when requiredProp's required option is true and a corresponding query is given.`, async () => {
     vm = new Vue({
       router,
       routeProps: {
@@ -60,8 +60,10 @@ describe('required', () => {
         prop: JSON.stringify(1)
       }
     })
+    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(1) })
+    expect(vm.prop).toEqual(1)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
