@@ -9,6 +9,11 @@ let vm
 let router
 let spy
 
+// https://developer.mozilla.org/en-US/docs/Glossary/Falsy
+const falsyValues = [null, undefined, 0, '', false, NaN, 0n]
+// https://developer.mozilla.org/en-US/docs/Glossary/Truthy
+const truthyValues = [true, {}, [], 42, "0", "false", new Date(), -42, 12n, 3.14, -3.14, Infinity, -Infinity]
+
 describe('required', () => {
   beforeEach(() => {
     router = new VueRouter({
@@ -24,48 +29,34 @@ describe('required', () => {
     spy.mockClear()
   })
 
-  it(`should log error when custom validator return falsy values.`, () => {
-    // https://developer.mozilla.org/en-US/docs/Glossary/Falsy
-    const falsyValues = [null, undefined, 0, '', false, NaN, 0n]
-
-    for (const value of falsyValues) {
-      vm = new Vue({
-        router,
-        routeProps: {
-          prop: {
-            validator () {
-              return value
-            }
+  test.each(falsyValues)(`should log error when custom validator return falsy values.`, (value) => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          validator () {
+            return value
           }
         }
-      })
+      }
+    })
 
-      expect(console.error).toHaveBeenCalledTimes(1)
-      expect(spy.mock.calls[0].slice(0, 2)).toEqual([`[VueRouteProps warn]: `, `Invalid routeProp: custom validator check failed for routeProp "prop".`])
-
-      spy.mockClear()
-    }
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([`[VueRouteProps warn]: `, `Invalid routeProp: custom validator check failed for routeProp "prop".`])
   })
 
-  it(`should not log error when custom validator return true.`, () => {
-    // https://developer.mozilla.org/en-US/docs/Glossary/Truthy
-    const truthyValues = [true, {}, [], 42, "0", "false", new Date(), -42, 12n, 3.14, -3.14, Infinity, -Infinity]
-
-    for (const value of truthyValues) {
-      vm = new Vue({
-        router,
-        routeProps: {
-          prop: {
-            validator () {
-              return value
-            }
+  test.each(truthyValues)(`should not log error when custom validator return true.`, (value) => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          validator () {
+            return value
           }
         }
-      })
+      }
+    })
 
-      expect(console.error).toHaveBeenCalledTimes(0)
-
-      spy.mockClear()
-    }
+    expect(console.error).toHaveBeenCalledTimes(0)
   })
 })
