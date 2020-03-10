@@ -30,7 +30,7 @@ describe('required', () => {
     spy.mockClear()
   })
 
-  it(`should log error when requiredProp's required option is true even default option is given.`, async () => {
+  it(`should log error when requiredProp's required option is true even default option is given.`, () => {
     vm = new Vue({
       router,
       routeProps: {
@@ -45,7 +45,7 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(1)
   })
 
-  it(`should use default value.`, async () => {
+  it(`should use default value.`, () => {
     vm = new Vue({
       router,
       routeProps: {

@@ -10,7 +10,7 @@ let router
 let spy
 
 // https://developer.mozilla.org/en-US/docs/Glossary/Falsy
-const falsyValues = [null, undefined, 0, '', false, NaN, 0n]
+const falsyValues = [null, void 0, 0, '', false, NaN, 0n]
 // https://developer.mozilla.org/en-US/docs/Glossary/Truthy
 const truthyValues = [true, {}, [], 42, "0", "false", new Date(), -42, 12n, 3.14, -3.14, Infinity, -Infinity]
 

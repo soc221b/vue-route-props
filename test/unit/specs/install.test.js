@@ -35,19 +35,19 @@ describe('install', () => {
   it('should not inject any prop', () => {
     vm = new Vue({})
     expect(Object.keys(vm.$data).length).toBe(0)
-    expect(vm.$options.computed).toBe(undefined)
+    expect(vm.$options.computed).toBe(void 0)
 
     vm = new Vue({
       routeProps: {}
     })
     expect(Object.keys(vm.$data).length).toBe(0)
-    expect(vm.$options.computed).toBe(undefined)
+    expect(vm.$options.computed).toBe(void 0)
 
     vm = new Vue({
       router,
     })
     expect(Object.keys(vm.$data).length).toBe(0)
-    expect(vm.$options.computed).toBe(undefined)
+    expect(vm.$options.computed).toBe(void 0)
 
     vm = new Vue({
       data () {

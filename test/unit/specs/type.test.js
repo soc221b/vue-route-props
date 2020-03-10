@@ -127,7 +127,7 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  it(`should throw error when given value is not expected type (specify type as prop value).`, async () => {
+  it(`should log error when given value is not expected type (specify type as prop value).`, async () => {
     vm = new Vue({
       router,
       routeProps: {
@@ -149,12 +149,12 @@ describe('required', () => {
     ])
   })
 
-  it(`should throw error when given value is expected type (specify type with type option).`, async () => {
+  it(`should log error when given value is not expected type (null).`, async () => {
     vm = new Vue({
       router,
       routeProps: {
         prop: {
-          type: Boolean,
+          type: null,
         }
       }
     })
@@ -169,7 +169,7 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0].slice(0, 2)).toEqual([
       `[VueRouteProps warn]: `,
-      `Invalid routeProp: type check failed for routeProp "prop". Expected Boolean, got Number with value 1.`
+      `Invalid routeProp: type check failed for routeProp "prop". Expected null, got Number with value 1.`
     ])
   })
 })

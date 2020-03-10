@@ -49,8 +49,9 @@ export const generateData = ({
 
     const value = route.query.hasOwnProperty(key)
       ? JSON.parse(route.query[key])
-      : undefined
+      : void 0
 
+    /* istanbul ignore next */
     if (DEBUG) {
       validate({
         routeProps,
@@ -62,7 +63,7 @@ export const generateData = ({
 
     data[key] = value
 
-    if (value === undefined) {
+    if (value === void 0) {
       data[key] = normalizedProp.default()
     }
   }
@@ -122,7 +123,7 @@ export const normalize = ({
 
     if (toString(prop.default) === '[object Function]') {
       normalizedProp.default = prop.default
-    } else if (toString(prop.default) !== void 0) {
+    } else {
       normalizedProp.default = () => prop.default
     }
   }
@@ -218,14 +219,10 @@ export const validateType = ({
     result = true
   }
 
-  else if (value !== void 0 && value !== null) {
+  else {
     for (const constructor of normalizedProp.type.filter(type => type !== null)) {
       result = result || Object.getPrototypeOf(value).constructor === constructor
     }
-  }
-
-  if (normalizedProp.type.length === 0) {
-    result = true
   }
 
   if (result === false) {
@@ -238,15 +235,15 @@ export const validateType = ({
       }
     }
     const valueType = toString(value).slice(8, -1)
-    value = value === undefined ? 'undefined' : JSON.stringify(value)
+    value = JSON.stringify(value)
 
     error(
       `Invalid routeProp: type check failed for routeProp "${key}". Expected ${type.join(', ')}, got ${valueType} with value ${value}.`,
       context,
     )
-    return false
   }
-  return true
+
+  return result
 }
 
 export const validateCustom = ({
