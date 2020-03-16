@@ -17,7 +17,8 @@
     "build": "node scripts/build.js",
     "test": "jest --clear-cache && jest",
     "test:coverage": "rimraf coverage && yarn run test --coverage --coverage-directory coverage --coverage-reporters lcov --coverage-path-ignore-patterns dist",
-    "test:watch": "yarn run test --watch-all"
+    "test:watch": "yarn run test --watch-all",
+    "pre-publish": "node scripts/publish.js"
   },
   "jest": {
     "transform": {
@@ -44,6 +45,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^1.31.1",
     "rollup-plugin-terser": "^5.2.0",
+    "shelljs": "^0.8.3",
     "typescript": "^3.8.3",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6"
