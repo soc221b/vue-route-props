@@ -30,6 +30,7 @@ function createMixin() {
         this.$options.routeProps = normalize({
           routeProps: this.$options.routeProps,
         })
+        this._routeProps = {}
       }
 
       return {}
@@ -54,7 +55,23 @@ function createMixin() {
             context: this,
           })
           for (const routeProp in newData) {
-            this[routeProp] = newData[routeProp]
+            this._routeProps[routeProp] = newData[routeProp]
+            Object.defineProperty(this, routeProp, {
+              configurable: true,
+              enumerable: true,
+              set (newValue) {
+                error(
+                  `Avoid mutating a routeProp directly since the value will be ` +
+                  `overwritten whenever the route changes. ` +
+                  `Instead, use a data or computed property based on the routeProp's ` +
+                  `value. Prop being mutated: "${routeProp}"`,
+                  this,
+                )
+              },
+              get () {
+                return this._routeProps[routeProp]
+              }
+            })
           }
         }
       },
