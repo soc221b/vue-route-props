@@ -321,13 +321,14 @@ export function validateCustom ({
     ? JSON.parse(context.$route.query[prop])
     : normalizedRouteProps[prop].default()
 
-  if (!normalizedRouteProps[prop].validator(value, prop)) {
+  if (normalizedRouteProps[prop].required && !normalizedRouteProps[prop].validator(value, prop)) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
       context,
     )
     return false
   }
+
   return true
 }
 

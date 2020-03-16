@@ -30,10 +30,16 @@ describe('required', () => {
   })
 
   test.each(falsyValues)(`should log error when custom validator return falsy values.`, (value) => {
+    router.replace({
+      query: {
+        prop: JSON.stringify('no matter')
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
         prop: {
+          required: true,
           validator () {
             return value
           }
@@ -46,10 +52,32 @@ describe('required', () => {
   })
 
   test.each(truthyValues)(`should not log error when custom validator return true.`, (value) => {
+    router.replace({
+      query: {
+        prop: JSON.stringify('no matter')
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
         prop: {
+          required: true,
+          validator () {
+            return value
+          }
+        }
+      }
+    })
+
+    expect(console.error).toHaveBeenCalledTimes(0)
+  })
+
+  test.each(falsyValues)(`should not validate when routeProp is not required.`, (value) => {
+    vm = new Vue({
+      router,
+      routeProps: {
+        prop: {
+          required: false,
           validator () {
             return value
           }
