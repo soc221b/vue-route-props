@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import {
   DEBUG,
   error,
@@ -17,61 +18,57 @@ function returnTrue () {
 
 function createMixin() {
   return {
-    data () {
-      if (has(this.$options, 'routeProps')) {
-        /* istanbul ignore next */
-        if (DEBUG) {
-          validateRoutePropsOption({
-            routeProps: this.$options.routeProps,
-            context: this,
-          })
-        }
+    beforeCreate () {
+      if (this.$options.routeProps === void 0) return {}
 
-        this.$options.routeProps = normalize({
+      /* istanbul ignore next */
+      if (DEBUG) {
+        validateRoutePropsOption({
           routeProps: this.$options.routeProps,
+          context: this,
         })
-        this._routeProps = {}
       }
 
-      return {}
+      this._routeProps = {
+        normalized: normalize({
+          routeProps: this.$options.routeProps,
+        }),
+        computed: {},
+      }
+
+      for (const routeProp in this._routeProps.normalized) {
+        this._routeProps.computed[routeProp] = void 0
+
+        Vue.util.defineReactive(this._routeProps.computed, routeProp)
+
+        proxy({
+          vm: this,
+          routeProp
+        })
+      }
     },
+
     watch: {
       '$route': {
         immediate: true,
         handler () {
-          if (has(this.$options, 'routeProps') === false) return
+          if (this.$options.routeProps === void 0) return
 
           /* istanbul ignore next */
           if (DEBUG) {
             validateRoutePropsValue({
-              normalizedRouteProps: this.$options.routeProps,
+              normalizedRouteProps: this._routeProps.normalized,
               context: this,
             })
           }
 
           const newData = generateData({
-            normalizedRouteProps: this.$options.routeProps,
+            normalizedRouteProps: this._routeProps.normalized,
             route: this.$route,
             context: this,
           })
           for (const routeProp in newData) {
-            this._routeProps[routeProp] = newData[routeProp]
-            Object.defineProperty(this, routeProp, {
-              configurable: true,
-              enumerable: true,
-              set (newValue) {
-                error(
-                  `Avoid mutating a routeProp directly since the value will be ` +
-                  `overwritten whenever the route changes. ` +
-                  `Instead, use a data or computed property based on the routeProp's ` +
-                  `value. Prop being mutated: "${routeProp}"`,
-                  this,
-                )
-              },
-              get () {
-                return this._routeProps[routeProp]
-              }
-            })
+            this._routeProps.computed[routeProp] = newData[routeProp]
           }
         }
       },
@@ -330,6 +327,28 @@ export function validateCustom ({
   }
 
   return true
+}
+
+function proxy ({
+  vm,
+  routeProp,
+}) {
+  Object.defineProperty(vm, routeProp, {
+    configurable: true,
+    enumerable: true,
+    set () {
+      error(
+        `Avoid mutating a routeProp directly since the value will be ` +
+        `overwritten whenever the route changes. ` +
+        `Instead, use a data or computed property based on the routeProp's ` +
+        `value. Prop being mutated: "${routeProp}"`,
+        vm,
+      )
+    },
+    get () {
+      return vm._routeProps.computed[routeProp]
+    },
+  })
 }
 
 export default createMixin
