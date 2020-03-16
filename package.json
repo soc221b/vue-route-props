@@ -24,7 +24,14 @@
       "^.+\\.(t|j)sx?$": "babel-jest"
     }
   },
-  "repository": "git@github.com:iendeavor/vue-route-props.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iendeavor/vue-route-props.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iendeavor/vue-route-props/issues"
+  },
+  "homepage": "https://github.com/iendeavor/vue-route-props#readme",
   "author": "Ernest <iattempt.net@gmail.com>",
   "license": "MIT",
   "devDependencies": {
