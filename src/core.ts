@@ -2,182 +2,246 @@ import {
   DEBUG,
   error,
   toString,
+  has,
 } from './utils.ts'
 
 const stringifyableTypes = [null, Boolean, String, Number, Array, Object]
 
-const createMixin = () => {
+function returnUndefined () {
+  return void 0
+}
+
+function returnTrue () {
+  return true
+}
+
+function createMixin() {
   return {
     data () {
-      return generateData({
-        routeProps: this.$options.routeProps,
-        route: this.$route,
-        context: this,
-      })
+      if (has(this.$options, 'routeProps')) {
+        /* istanbul ignore next */
+        if (DEBUG) {
+          validateRoutePropsOption({
+            routeProps: this.$options.routeProps,
+            context: this,
+          })
+        }
+
+        this.$options.routeProps = normalize({
+          routeProps: this.$options.routeProps,
+        })
+      }
+
+      return {}
     },
     watch: {
-      '$route' () {
-        const newData = generateData({
-          routeProps: this.$options.routeProps,
-          route: this.$route,
-          context: this,
-        })
+      '$route': {
+        immediate: true,
+        handler () {
+          if (has(this.$options, 'routeProps') === false) return
 
-        for (const routeProp in newData) {
-          this[routeProp] = newData[routeProp]
+          /* istanbul ignore next */
+          if (DEBUG) {
+            validateRoutePropsValue({
+              normalizedRouteProps: this.$options.routeProps,
+              context: this,
+            })
+          }
+
+          const newData = generateData({
+            normalizedRouteProps: this.$options.routeProps,
+            route: this.$route,
+            context: this,
+          })
+          for (const routeProp in newData) {
+            this[routeProp] = newData[routeProp]
+          }
         }
       },
     },
   }
 }
 
-export const generateData = ({
+export function validateRoutePropsOption ({
   routeProps,
+  context,
+}) {
+  let isValid = true
+
+  if (toString(routeProps) === '[object Object]') {
+    for (const prop in routeProps) {
+      if (toString(routeProps[prop]) === '[object Object]') {
+        isValid = isValid && (
+          validateDefault({
+            routeProps,
+            prop,
+            context,
+          })
+        )
+      }
+    }
+  }
+
+  return isValid
+}
+
+export function validateDefault ({
+  routeProps,
+  prop,
+  context,
+}) {
+  if (toString(routeProps[prop].default) === '[object Object]' || toString(routeProps[prop].default) === '[object Array]') {
+    error(
+      `Invalid default value for routeProp "${prop}": routeProps with type Object/Array must use a factory function to return the default value.`,
+      context,
+    )
+    return false
+  }
+  return true
+}
+
+export function normalize ({
+  routeProps,
+}) {
+  if (toString(routeProps) === '[object Array]') {
+    /*
+    convert routeProps: ['prop1', 'prop2']
+    to      routeProps: {
+              prop1: {},
+              prop2: {},
+            }
+    }
+    */
+    const newRouteProps = {}
+    for (const prop of routeProps) {
+      newRouteProps[prop] = {}
+    }
+    routeProps = newRouteProps
+  }
+
+  for (const prop in routeProps) {
+    if (toString(routeProps[prop]) === '[object Array]') {
+      /*
+      convert routeProps: {
+                prop1: [String, Number],
+              }
+      to      routeProps: {
+                prop1: {
+                  type: [String, Number],
+                }
+              }
+      */
+      routeProps[prop] = {
+        type: routeProps[prop]
+      }
+    }
+    else if (toString(routeProps[prop]) !== '[object Object]') {
+      /*
+      convert routeProps: {
+                prop1: String,
+              }
+      to      routeProps: {
+                prop1: {
+                  type: [String],
+                }
+              }
+      */
+      routeProps[prop] = {
+        type: [routeProps[prop]]
+      }
+    }
+  }
+
+  for (const prop in routeProps) {
+    if (has(routeProps[prop], 'required') === false) {
+      routeProps[prop].required = false
+    }
+
+    if (has(routeProps[prop], 'type') === false) {
+      routeProps[prop].type = stringifyableTypes
+    }
+    else if (toString(routeProps[prop].type) !== '[object Array]') {
+      routeProps[prop].type = [routeProps[prop].type]
+    }
+    else if (routeProps[prop].type.length === 0) {
+      routeProps[prop].type = stringifyableTypes
+    }
+
+    if (has(routeProps[prop], 'default') === false) {
+      routeProps[prop].default = returnUndefined
+    }
+    else if (toString(routeProps[prop].default) !== '[object Function]') {
+      const defaultValue = routeProps[prop].default
+      routeProps[prop].default = function () {
+        return defaultValue
+      }
+    }
+
+    if (has(routeProps[prop], 'validator') === false) {
+      routeProps[prop].validator = returnTrue
+    }
+  }
+
+  return routeProps
+}
+
+export function generateData ({
+  normalizedRouteProps,
   route,
   context,
-}) => {
-  routeProps = normalizeRouteProps({
-    routeProps
-  })
+}) {
   const data = {}
 
-  for (const key in routeProps) {
-    const normalizedProp = normalize({
-      routeProps,
-      key,
-    })
-
-    const value = route.query.hasOwnProperty(key)
-      ? JSON.parse(route.query[key])
-      : void 0
-
-    /* istanbul ignore next */
-    if (DEBUG) {
-      validate({
-        routeProps,
-        key,
-        value,
-        context
-      })
-    }
-
-    data[key] = value
-
-    if (value === void 0) {
-      data[key] = normalizedProp.default()
-    }
+  for (const prop in normalizedRouteProps) {
+    data[prop] = has(route.query, prop)
+      ? JSON.parse(route.query[prop])
+      : normalizedRouteProps[prop].default()
   }
 
   return data
 }
 
-const normalizeRouteProps = ({
-  routeProps,
-}) => {
-  let normalizedRouteProps = routeProps
-
-  if (toString(routeProps) === '[object Array]') {
-    normalizedRouteProps = {}
-    for (const routeProp of routeProps) {
-      normalizedRouteProps[routeProp] = {}
-    }
-  }
-
-  return normalizedRouteProps
-}
-
-export const normalize = ({
-  routeProps,
-  key,
-}) => {
-  const normalizedProp = {
-    default: function returnUndefined () { return void 0 },
-    required: false,
-    type: [],
-    validator: function returnTrue () { return true },
-  }
-
-  const prop = routeProps[key]
-
-  if (toString(prop) !== '[object Object]') {
-    normalizedProp.type = [prop]
-  }
-
-  else {
-    if (toString(prop.type) === '[object Array]') {
-      normalizedProp.type = prop.type
-    } else if (prop.type !== void 0) {
-      normalizedProp.type = [prop.type]
-    }
-    if (normalizedProp.type.length === 0) {
-      normalizedProp.type = stringifyableTypes
-    }
-
-    if (toString(prop.required) === '[object Boolean]') {
-      normalizedProp.required = prop.required
-    }
-
-    if (toString(prop.validator) === '[object Function]') {
-      normalizedProp.validator = prop.validator
-    }
-
-    if (toString(prop.default) === '[object Function]') {
-      normalizedProp.default = prop.default
-    } else {
-      normalizedProp.default = () => prop.default
-    }
-  }
-
-  return normalizedProp
-}
-
-export const validate = ({
-  routeProps,
-  key,
-  value,
+export function validateRoutePropsValue ({
+  normalizedRouteProps,
   context,
-}) => {
-  const normalizedProp = normalize({
-    routeProps,
-    key,
-  })
+}) {
+  let isValid = true
 
-  return (
-    validateDefault({
-      routeProps,
-      key,
-      context,
-    })
-    && validateRequired({
-      normalizedProp,
-      key,
-      value,
-      context,
-    })
-    && validateType({
-      normalizedProp,
-      key,
-      value,
-      context,
-    })
-    && validateCustom({
-      normalizedProp,
-      key,
-      value,
-      context,
-    })
-  )
+  for (const prop in normalizedRouteProps) {
+    isValid = isValid && (
+      validateRequired({
+        normalizedRouteProps,
+        prop,
+        context,
+      })
+      && validateType({
+        normalizedRouteProps,
+        prop,
+        context,
+      })
+      && validateCustom({
+        normalizedRouteProps,
+        prop,
+        context,
+      })
+    )
+  }
+
+  return isValid
 }
 
-export const validateDefault = ({
-  routeProps,
-  key,
+export function validateRequired ({
+  normalizedRouteProps,
+  prop,
   context,
-}) => {
-  const prop = routeProps[key]
-  if (toString(prop) === '[object Object]' && typeof routeProps[key].default === 'object' && routeProps[key].default !== null) {
+}) {
+  const value = has(context.$route.query, prop)
+    ? JSON.parse(context.$route.query[prop])
+    : void 0
+
+  if (normalizedRouteProps[prop].required && value === void 0) {
     error(
-      `Invalid default value for routeProp "${key}": routeProps with type Object/Array must use a factory function to return the default value.`,
+      `Missing required routeProp: "${prop}"`,
       context,
     )
     return false
@@ -185,79 +249,64 @@ export const validateDefault = ({
   return true
 }
 
-export const validateRequired = ({
-  normalizedProp,
-  key,
-  value,
+export function validateType ({
+  normalizedRouteProps,
+  prop,
   context,
-}) => {
-  if (normalizedProp.required && value === void 0) {
-    error(
-      `Missing required routeProp: "${key}"`,
-      context,
-    )
-    return false
-  }
-  return true
-}
+}) {
+  const value = has(context.$route.query, prop)
+    ? JSON.parse(context.$route.query[prop])
+    : normalizedRouteProps[prop].default()
 
-export const validateType = ({
-  normalizedProp,
-  key,
-  value,
-  context,
-}) => {
-  value = value !== void 0 ? value : normalizedProp.default()
+  let isValid = true
 
-  let result = false
-
-  if (value === void 0 && normalizedProp.required === false) {
-    result = true
-  }
-
-  else if (value === null && normalizedProp.type.includes(null) === true) {
-    result = true
-  }
-
-  else {
-    for (const constructor of normalizedProp.type.filter(type => type !== null)) {
-      result = result || Object.getPrototypeOf(value).constructor === constructor
+  if (value === void 0) {
+    if (normalizedRouteProps[prop].required === true) {
+      isValid = false
     }
   }
+  else if (value === null) {
+    if (normalizedRouteProps[prop].type.includes(null) === false) {
+      isValid = false
+    }
+  }
+  else if (normalizedRouteProps[prop].type.includes(Object.getPrototypeOf(value).constructor) === false){
+    isValid = false
+  }
 
-  if (result === false) {
+  if (isValid === false) {
     const type = []
-    for (const constructor of normalizedProp.type) {
+    for (const constructor of normalizedRouteProps[prop].type) {
       if (constructor === null) {
         type.push('null')
-      } else {
+      }
+      else {
         type.push(/function ([^(]+)/.exec(constructor.toString())[1])
       }
     }
     const valueType = toString(value).slice(8, -1)
-    value = JSON.stringify(value)
 
     error(
-      `Invalid routeProp: type check failed for routeProp "${key}". Expected ${type.join(', ')}, got ${valueType} with value ${value}.`,
+      `Invalid routeProp: type check failed for routeProp "${prop}". Expected ${type.join(', ')}, got ${valueType} with value ${JSON.stringify(value)}.`,
       context,
     )
   }
 
-  return result
+  return isValid
 }
 
-export const validateCustom = ({
-  normalizedProp,
-  key,
-  value,
+export function validateCustom ({
+  normalizedRouteProps,
+  prop,
   context,
-}) => {
-  value = value !== void 0 ? value : normalizedProp.default()
-  if (
-    !normalizedProp.validator(value, key)
-  ) {
+}) {
+  const value = has(context.$route.query, prop)
+    ? JSON.parse(context.$route.query[prop])
+    : normalizedRouteProps[prop].default()
+
+  if (!normalizedRouteProps[prop].validator(value, prop)) {
     error(
-      `Invalid routeProp: custom validator check failed for routeProp "${key}".`,
+      `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
       context,
     )
     return false

@@ -15,3 +15,7 @@ export const error = (message, vm) => {
 export const toString = (value) => {
   return {}.toString.call(value)
 }
+
+export const has = (object, key) => {
+  return object.hasOwnProperty(key)
+}
