@@ -17,7 +17,7 @@ function askNewVersion () {
       output: process.stdout
     });
 
-    rl.question(`Old version: ${packageJson.version}\nNew version:`, (answer) => {
+    rl.question(`Old version: ${packageJson.version}\nNew version: `, (answer) => {
       rl.close();
       packageJson.version = answer
       resolve()
