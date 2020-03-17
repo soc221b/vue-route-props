@@ -39,7 +39,7 @@ function returnTrue () {
 function createMixin() {
   return {
     beforeCreate () {
-      if (this.$options.routeProps === void 0) return {}
+      if (this.$options.routeProps === void 0) return
 
       /* istanbul ignore next */
       if (DEBUG) {
@@ -105,8 +105,14 @@ function validateRoutePropsOption ({
   if (toString(routeProps) === '[object Object]') {
     for (const prop in routeProps) {
       if (toString(routeProps[prop]) === '[object Object]') {
-        isValid = isValid && (
-          validateDefault({
+        isValid = (
+          isValid
+          && validateRoutePropsDefaultOption({
+            routeProps,
+            prop,
+            context,
+          })
+          && validateRoutePropsValidatorOption({
             routeProps,
             prop,
             context,
@@ -119,7 +125,7 @@ function validateRoutePropsOption ({
   return isValid
 }
 
-function validateDefault ({
+function validateRoutePropsDefaultOption ({
   routeProps,
   prop,
   context,
@@ -132,6 +138,33 @@ function validateDefault ({
     return false
   }
   return true
+}
+
+function validateRoutePropsValidatorOption ({
+  routeProps,
+  prop,
+  context,
+}) {
+  let isValid = true;
+
+  if (toString(routeProps[prop].validator) === '[object Function]') {
+    if (has(routeProps[prop], 'default')) {
+      if (toString(routeProps[prop].default) === '[object Function]') {
+        isValid = routeProps[prop].validator(routeProps[prop].default());
+      } else {
+        isValid = routeProps[prop].validator(routeProps[prop].default);
+      }
+    }
+  }
+
+  if (isValid === false) {
+    error(
+      `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
+      context,
+    );
+  }
+
+  return isValid
 }
 
 function normalize ({
@@ -242,8 +275,9 @@ function validateRoutePropsValue ({
   let isValid = true;
 
   for (const prop in normalizedRouteProps) {
-    isValid = isValid && (
-      validateRequired({
+    isValid = (
+      isValid
+      && validateRequired({
         normalizedRouteProps,
         prop,
         context,
@@ -338,7 +372,13 @@ function validateCustom ({
     ? JSON.parse(context.$route.query[prop])
     : normalizedRouteProps[prop].default();
 
-  if (normalizedRouteProps[prop].required && !normalizedRouteProps[prop].validator(value, prop)) {
+  if (
+    (
+      normalizedRouteProps[prop].required
+      || has(context.$route.query, prop)
+    )
+    && !normalizedRouteProps[prop].validator(value, prop)
+  ) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
       context,
