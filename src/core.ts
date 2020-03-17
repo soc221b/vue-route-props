@@ -87,6 +87,11 @@ export function validateRoutePropsOption ({
       if (toString(routeProps[prop]) === '[object Object]') {
         isValid = (
           isValid
+          && validateRoutePropsDefaultOption({
+            routeProps,
+            prop,
+            context,
+          })
           && validateRoutePropsValidatorOption({
             routeProps,
             prop,
@@ -113,6 +118,33 @@ export function validateRoutePropsDefaultOption ({
     return false
   }
   return true
+}
+
+export function validateRoutePropsValidatorOption ({
+  routeProps,
+  prop,
+  context,
+}) {
+  let isValid = true
+
+  if (toString(routeProps[prop].validator) === '[object Function]') {
+    if (has(routeProps[prop], 'default')) {
+      if (toString(routeProps[prop].default) === '[object Function]') {
+        isValid = routeProps[prop].validator(routeProps[prop].default())
+      } else {
+        isValid = routeProps[prop].validator(routeProps[prop].default)
+      }
+    }
+  }
+
+  if (isValid === false) {
+    error(
+      `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
+      context,
+    )
+  }
+
+  return isValid
 }
 
 export function normalize ({
@@ -320,7 +352,13 @@ export function validateCustom ({
     ? JSON.parse(context.$route.query[prop])
     : normalizedRouteProps[prop].default()
 
-  if (normalizedRouteProps[prop].required && !normalizedRouteProps[prop].validator(value, prop)) {
+  if (
+    (
+      normalizedRouteProps[prop].required
+      || has(context.$route.query, prop)
+    )
+    && !normalizedRouteProps[prop].validator(value, prop)
+  ) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
       context,
