@@ -19,7 +19,7 @@ function returnTrue () {
 function createMixin() {
   return {
     beforeCreate () {
-      if (this.$options.routeProps === void 0) return {}
+      if (this.$options.routeProps === void 0) return
 
       /* istanbul ignore next */
       if (DEBUG) {
