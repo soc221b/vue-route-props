@@ -5,7 +5,7 @@
   "main": "dist/vue-route-props.common.min.js",
   "module": "dist/vue-route-props.esm.min.js",
   "unpkg": "dist/vue-route-props.min.js",
-  "jsdelivr": "dist/vue-route-props.js",
+  "jsdelivr": "dist/vue-route-props.min.js",
   "keywords": [
     "vue",
     "vue-router",
