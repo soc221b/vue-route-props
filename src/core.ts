@@ -85,8 +85,9 @@ export function validateRoutePropsOption ({
   if (toString(routeProps) === '[object Object]') {
     for (const prop in routeProps) {
       if (toString(routeProps[prop]) === '[object Object]') {
-        isValid = isValid && (
-          validateDefault({
+        isValid = (
+          isValid
+          && validateRoutePropsValidatorOption({
             routeProps,
             prop,
             context,
@@ -99,7 +100,7 @@ export function validateRoutePropsOption ({
   return isValid
 }
 
-export function validateDefault ({
+export function validateRoutePropsDefaultOption ({
   routeProps,
   prop,
   context,
@@ -222,8 +223,9 @@ export function validateRoutePropsValue ({
   let isValid = true
 
   for (const prop in normalizedRouteProps) {
-    isValid = isValid && (
-      validateRequired({
+    isValid = (
+      isValid
+      && validateRequired({
         normalizedRouteProps,
         prop,
         context,

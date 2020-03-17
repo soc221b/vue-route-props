@@ -16,18 +16,16 @@ describe('install', () => {
         path: '/'
       }],
     })
+    router.replace({
+      query: {}
+    })
+      .catch(error => {
+        // ignore navigation to same route
+      })
     spy = jest.spyOn(console, 'error').mockImplementation()
   })
 
   afterEach(() => {
-    if (vm.$router) {
-      vm.$router.replace({
-        query: {}
-      })
-        .catch(error => {
-          // ignore navigation to same route
-        })
-    }
     vm.$destroy()
     spy.mockClear()
   })

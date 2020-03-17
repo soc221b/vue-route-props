@@ -26,32 +26,30 @@ describe('required', () => {
         path: '/'
       }],
     })
-    spy = jest.spyOn(console, 'error').mockImplementation()
-  })
-
-  afterEach(() => {
-    vm.$router.replace({
+    router.replace({
       query: {}
     })
       .catch(error => {
         // ignore navigation to same route
       })
+    spy = jest.spyOn(console, 'error').mockImplementation()
+  })
+
+  afterEach(() => {
     vm.$destroy()
     spy.mockClear()
   })
 
-  test.each([...validValueMapping.values()])(`should allow any stringifiable value.`, async (value) => {
-    vm = new Vue({
-      router,
-      routeProps: ['prop'],
-    })
-    spy.mockClear()
-    vm.$router.replace({
+  test.each([...validValueMapping.values()])(`should allow any stringifiable value.`, (value) => {
+    router.replace({
       query: {
         prop: JSON.stringify(value)
       }
     })
-    await Promise.resolve()
+    vm = new Vue({
+      router,
+      routeProps: ['prop'],
+    })
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)

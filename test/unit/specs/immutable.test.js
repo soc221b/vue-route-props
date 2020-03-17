@@ -16,21 +16,21 @@ describe('required', () => {
         path: '/'
       }],
     })
-    spy = jest.spyOn(console, 'error').mockImplementation()
-  })
-
-  afterEach(() => {
-    vm.$router.replace({
+    router.replace({
       query: {}
     })
       .catch(error => {
         // ignore navigation to same route
       })
+    spy = jest.spyOn(console, 'error').mockImplementation()
+  })
+
+  afterEach(() => {
     vm.$destroy()
     spy.mockClear()
   })
 
-  it(`should be immutable.`, async () => {
+  it(`should be immutable.`, () => {
     vm = new Vue({
       router,
       routeProps: {

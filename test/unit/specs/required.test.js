@@ -16,16 +16,16 @@ describe('required', () => {
         path: '/'
       }],
     })
-    spy = jest.spyOn(console, 'error').mockImplementation()
-  })
-
-  afterEach(() => {
-    vm.$router.replace({
+    router.replace({
       query: {}
     })
       .catch(error => {
         // ignore navigation to same route
       })
+    spy = jest.spyOn(console, 'error').mockImplementation()
+  })
+
+  afterEach(() => {
     vm.$destroy()
     spy.mockClear()
   })
@@ -45,7 +45,12 @@ describe('required', () => {
     expect(console.error).toHaveBeenCalledTimes(1)
   })
 
-  it(`should not log error when requiredProp's required option is true and a corresponding query is given.`, async () => {
+  it(`should not log error when requiredProp's required option is true and a corresponding query is given.`, () => {
+    router.replace({
+      query: {
+        prop: JSON.stringify(1)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
@@ -54,13 +59,6 @@ describe('required', () => {
         }
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(1)
-      }
-    })
-    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(1) })
     expect(vm.prop).toEqual(1)

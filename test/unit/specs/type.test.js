@@ -27,43 +27,46 @@ describe('required', () => {
         path: '/'
       }],
     })
-    spy = jest.spyOn(console, 'error').mockImplementation()
-  })
-
-  afterEach(() => {
-    vm.$router.replace({
+    router.replace({
       query: {}
     })
       .catch(error => {
         // ignore navigation to same route
       })
+    spy = jest.spyOn(console, 'error').mockImplementation()
+  })
+
+  afterEach(() => {
     vm.$destroy()
     spy.mockClear()
   })
 
-  test.each(stringifiableTypes)(`should allow user to specify type as prop value.`, async (type) => {
+  test.each(stringifiableTypes)(`should allow user to specify type as prop value.`, (type) => {
     const value = validValueMapping.get(type)
+    router.replace({
+      query: {
+        prop: JSON.stringify(value)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
         prop: type,
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(value)
-      }
-    })
-    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  test.each(stringifiableTypes)(`should allow user to specify type as type option.`, async (type) => {
+  test.each(stringifiableTypes)(`should allow user to specify type as type option.`, (type) => {
     const value = validValueMapping.get(type)
+    router.replace({
+      query: {
+        prop: JSON.stringify(value)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
@@ -72,40 +75,36 @@ describe('required', () => {
         }
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(value)
-      }
-    })
-    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  test.each([...validValueMapping.values()])(`should not do type validation.`, async (value) => {
+  test.each([...validValueMapping.values()])(`should not do type validation.`, (value) => {
+    router.replace({
+      query: {
+        prop: JSON.stringify(value)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
         prop: {}
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(value)
-      }
-    })
-    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  test.each([...validValueMapping.values()])(`should allow user to specify multitple types as type option.`, async (value) => {
+  test.each([...validValueMapping.values()])(`should allow user to specify multitple types as type option.`, (value) => {
+    router.replace({
+      query: {
+        prop: JSON.stringify(value)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
@@ -114,33 +113,24 @@ describe('required', () => {
         }
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(value)
-      }
-    })
-    await Promise.resolve()
 
     expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
     expect(vm.prop).toEqual(value)
     expect(console.error).toHaveBeenCalledTimes(0)
   })
 
-  it(`should log error when given value is not expected type (specify type as prop value).`, async () => {
+  it(`should log error when given value is not expected type (specify type as prop value).`, () => {
+    router.replace({
+      query: {
+        prop: JSON.stringify(1)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
         prop: Boolean,
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(1)
-      }
-    })
-    await Promise.resolve()
 
     expect(console.error).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0].slice(0, 2)).toEqual([
@@ -149,7 +139,12 @@ describe('required', () => {
     ])
   })
 
-  it(`should log error when given value is not expected type (null).`, async () => {
+  it(`should log error when given value is not expected type (null).`, () => {
+    router.replace({
+      query: {
+        prop: JSON.stringify(1)
+      }
+    })
     vm = new Vue({
       router,
       routeProps: {
@@ -158,13 +153,6 @@ describe('required', () => {
         }
       }
     })
-    spy.mockClear()
-    vm.$router.replace({
-      query: {
-        prop: JSON.stringify(1)
-      }
-    })
-    await Promise.resolve()
 
     expect(console.error).toHaveBeenCalledTimes(1)
     expect(spy.mock.calls[0].slice(0, 2)).toEqual([

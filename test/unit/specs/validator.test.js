@@ -21,6 +21,12 @@ describe('required', () => {
         path: '/'
       }],
     })
+    router.replace({
+      query: {}
+    })
+      .catch(error => {
+        // ignore navigation to same route
+      })
     spy = jest.spyOn(console, 'error').mockImplementation()
   })
 
