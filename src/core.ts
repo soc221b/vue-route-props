@@ -24,6 +24,9 @@ function createMixin(Vue, options = {}) {
 
       /* istanbul ignore next */
       if (DEBUG) {
+        validateDependency({
+          context: this,
+        })
         validateRoutePropsOption({
           routeProps: this.$options.routeProps,
           context: this,
@@ -81,6 +84,17 @@ function createMixin(Vue, options = {}) {
         }
       },
     },
+  }
+}
+
+export function validateDependency ({
+  context,
+}) {
+  if (context.$router === void 0) {
+    error(
+      `Missing vue-router`,
+      context,
+    )
   }
 }
 

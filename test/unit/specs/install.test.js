@@ -100,4 +100,15 @@ describe('install', () => {
     expect(Object.keys(vm.$data).length).toBe(0)
     expect(Object.keys(vm.$options.computed).length).toBe(0)
   })
+
+  it('should check vue-router', () => {
+    vm = new Vue({
+      routeProps: {},
+    })
+    expect(console.error).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0].slice(0, 2)).toEqual([
+      `[VueRouteProps warn]: `,
+      `Missing vue-router`
+    ])
+  })
 })
