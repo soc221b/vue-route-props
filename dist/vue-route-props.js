@@ -1,10 +1,10 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vue')) :
   typeof define === 'function' && define.amd ? define(['vue'], factory) :
-  (global = global || self, global.VueChronos = factory(global.Vue));
-}(this, (function (Vue) { 'use strict';
+  (global = global || self, global.VueChronos = factory(global.vue));
+}(this, (function (vue) { 'use strict';
 
-  Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
+  vue = vue && vue.hasOwnProperty('default') ? vue['default'] : vue;
 
   const DEBUG = (
     typeof process === 'object' &&
@@ -15,6 +15,14 @@
   const error = (message, vm) => {
     console.error(
       `[VueRouteProps warn]: `,
+      message,
+      vm,
+    );
+  };
+
+  const log = (message, vm) => {
+    console.log(
+      `[VueRouteProps log]: `,
       message,
       vm,
     );
@@ -38,13 +46,16 @@
     return true
   }
 
-  function createMixin() {
+  function createMixin(Vue, options = {}) {
     return {
       beforeCreate () {
         if (this.$options.routeProps === void 0) return
 
         /* istanbul ignore next */
         if (DEBUG) {
+          validateDependency({
+            context: this,
+          });
           validateRoutePropsOption({
             routeProps: this.$options.routeProps,
             context: this,
@@ -92,9 +103,27 @@
             for (const routeProp in newData) {
               this._routeProps.computed[routeProp] = newData[routeProp];
             }
+
+            if (options.debug) {
+              log(
+                JSON.stringify(this._routeProps.computed, null, 2),
+                this,
+              );
+            }
           }
         },
       },
+    }
+  }
+
+  function validateDependency ({
+    context,
+  }) {
+    if (context.$router === void 0) {
+      error(
+        `Missing vue-router`,
+        context,
+      );
     }
   }
 
@@ -413,8 +442,8 @@
     });
   }
 
-  const install = function (Vue) {
-    Vue.mixin(createMixin());
+  const install = function (Vue, options) {
+    Vue.mixin(createMixin(Vue, options));
   };
 
   var index = { install };

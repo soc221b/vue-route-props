@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import 'vue';
 
 const DEBUG = (
   typeof process === 'object' &&
@@ -9,6 +9,14 @@ const DEBUG = (
 const error = (message, vm) => {
   console.error(
     `[VueRouteProps warn]: `,
+    message,
+    vm,
+  );
+};
+
+const log = (message, vm) => {
+  console.log(
+    `[VueRouteProps log]: `,
     message,
     vm,
   );
@@ -32,13 +40,16 @@ function returnTrue () {
   return true
 }
 
-function createMixin() {
+function createMixin(Vue, options = {}) {
   return {
     beforeCreate () {
       if (this.$options.routeProps === void 0) return
 
       /* istanbul ignore next */
       if (DEBUG) {
+        validateDependency({
+          context: this,
+        });
         validateRoutePropsOption({
           routeProps: this.$options.routeProps,
           context: this,
@@ -86,9 +97,27 @@ function createMixin() {
           for (const routeProp in newData) {
             this._routeProps.computed[routeProp] = newData[routeProp];
           }
+
+          if (options.debug) {
+            log(
+              JSON.stringify(this._routeProps.computed, null, 2),
+              this,
+            );
+          }
         }
       },
     },
+  }
+}
+
+function validateDependency ({
+  context,
+}) {
+  if (context.$router === void 0) {
+    error(
+      `Missing vue-router`,
+      context,
+    );
   }
 }
 
@@ -407,8 +436,8 @@ function proxy ({
   });
 }
 
-const install = function (Vue) {
-  Vue.mixin(createMixin());
+const install = function (Vue, options) {
+  Vue.mixin(createMixin(Vue, options));
 };
 
 var index = { install };
