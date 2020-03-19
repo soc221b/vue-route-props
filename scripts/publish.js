@@ -34,8 +34,8 @@ function writePackageJson () {
 }
 
 async function main () {
-  exec(`yarn test`)
   exec(`yarn build`)
+  exec(`yarn test`)
   readPackageJson()
   await askNewVersion()
   writePackageJson()
