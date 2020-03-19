@@ -2,6 +2,7 @@ import Vue from 'vue'
 import {
   DEBUG,
   error,
+  log,
   toString,
   has,
 } from './utils.ts'
@@ -16,7 +17,7 @@ function returnTrue () {
   return true
 }
 
-function createMixin() {
+function createMixin(Vue, options = {}) {
   return {
     beforeCreate () {
       if (this.$options.routeProps === void 0) return
@@ -69,6 +70,13 @@ function createMixin() {
           })
           for (const routeProp in newData) {
             this._routeProps.computed[routeProp] = newData[routeProp]
+          }
+
+          if (options.debug) {
+            log(
+              JSON.stringify(this._routeProps.computed, null, 2),
+              this,
+            )
           }
         }
       },

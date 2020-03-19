@@ -12,6 +12,14 @@ export const error = (message, vm) => {
   )
 }
 
+export const log = (message, vm) => {
+  console.log(
+    `[VueRouteProps log]: `,
+    message,
+    vm,
+  )
+}
+
 export const toString = (value) => {
   return {}.toString.call(value)
 }

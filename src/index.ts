@@ -1,7 +1,7 @@
 import createMixin from './core.ts'
 
-const install = function (Vue) {
-  Vue.mixin(createMixin())
+const install = function (Vue, options) {
+  Vue.mixin(createMixin(Vue, options))
 }
 
 export default { install }
