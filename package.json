@@ -1,7 +1,7 @@
 {
   "name": "vue-route-props",
   "version": "0.1.2",
-  "description": "Automatically bind vue-router, with the same API in Vue props.",
+  "description": "Automatically bind vue-router query to vm, APIs are mostly same as the Vue props.",
   "main": "dist/vue-route-props.common.min.js",
   "module": "dist/vue-route-props.esm.min.js",
   "unpkg": "dist/vue-route-props.min.js",
@@ -10,6 +10,7 @@
     "vue",
     "vue-router",
     "props",
+    "query",
     "validation"
   ],
   "scripts": {

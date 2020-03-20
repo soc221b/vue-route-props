@@ -1,8 +1,6 @@
 # vue-route-props
 
-Automatically bind vue-router query, Same as the props API in Vue.
-
-> Only stringifiable types are supported.
+Automatically bind vue-router query to vm, APIs are mostly same as the Vue props.
 
 [![npm version](https://img.shields.io/npm/v/vue-route-props)](https://www.npmjs.com/package/vue-route-props)
 [![CI](https://github.com/iendeavor/vue-route-props/workflows/CI/badge.svg?branch=develop)](https://github.com/iendeavor/vue-route-props/actions?query=branch%3Adevelop)
@@ -11,6 +9,7 @@ Automatically bind vue-router query, Same as the props API in Vue.
 ## Install
 
 ```bash
+npm install vue-route-props
 yarn add vue-route-props
 ```
 
@@ -50,19 +49,50 @@ new Vue({
 
 ## API
 
-### Prop Types
+### vm
 
-Same as https://vuejs.org/v2/api/#props.
+#### Prop Types
 
-But the `type` option can ONLY be the following constructors: `String`, `Number`, `Boolean`, `Array`, `Object`, and the `null`.
-
-In order to keep values' type, you need to use `JSON.stringify` to add query at all times:
+In order to keep values' type, you need to **ALWAYS** use `JSON.stringify` to insert query:
 
 ```javascript
 this.$router.push({
   query: {
-    willBeString: 0, // wrong
-    willBeNumber: JSON.stringify(0), // expected
+    willBeString: 0, // wrong, there will be an error occurs
+    willBeNumber: JSON.stringify(0), // expected, the willBeNumber is bind with 0 now
   }
 })
+```
+
+### Options
+
+#### Inspect mode
+
+Since we bind routeProps to vm's root instead of data/computed, and so on, You cannot use the vue-dev-tools to inspect what value it is.
+
+In order to inspect routeProps, you can enable inspect mode. we will log all routeProps when it is updated.
+
+```javascript
+Vue.use(VueRouteProps, {
+  inspect: true
+})
+```
+
+```javascript
+new Vue({
+  routeProps: {
+    prop: {
+      type: String,
+      default: "a default value"
+    },
+  }
+})
+
+/*
+console:
+
+[VueRouteProps info]: {
+  prop: "a default value"
+}
+*/
 ```
