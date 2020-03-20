@@ -104,7 +104,7 @@
               this._routeProps.computed[routeProp] = newData[routeProp];
             }
 
-            if (options.debug) {
+            if (options.inspect) {
               log(
                 JSON.stringify(this._routeProps.computed, null, 2),
                 this,
