@@ -4,7 +4,7 @@ import VueRouteProps from '../../../src/index'
 
 Vue.use(VueRouter)
 Vue.use(VueRouteProps, {
-  debug: true
+  inspect: true
 })
 
 let vm
@@ -32,7 +32,7 @@ describe('install', () => {
     spyLog.mockClear()
   })
 
-  it('works with debug option', async () => {
+  it('works with inspect mode', async () => {
     vm = new Vue({
       router,
       routeProps: ['prop'],
