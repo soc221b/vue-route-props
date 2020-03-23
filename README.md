@@ -13,6 +13,10 @@ npm install vue-route-props
 yarn add vue-route-props
 ```
 
+## Why
+
+In order to make route `stateful`(e.g, let user to copy one route, and paste in another tab), in this way you need to pass `query` instead of [params](https://router.vuejs.org/guide/essentials/passing-props.html#boolean-mode). vue-route-props is implemented it which is much of the same in [vue props](https://vuejs.org/v2/guide/components-props.html).
+
 ## Usage
 
 [![Edit vue-route-props](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-route-props-vbuj1?fontsize=14&hidenavigation=1&theme=dark)
@@ -95,4 +99,14 @@ console:
   prop: "a default value"
 }
 */
+```
+
+### Debug mode
+
+In general, we log errors while environment is not in production mode. you can override it with debug mode.
+
+```javascript
+Vue.use(VueRouteProps, {
+  debug: true
+})
 ```

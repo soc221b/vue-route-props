@@ -42,13 +42,18 @@ function returnTrue () {
   return true
 }
 
-function createMixin(Vue, options = {}) {
+function createMixin(Vue, options) {
   return {
     beforeCreate () {
       if (this.$options.routeProps === void 0) return
 
+      options = normalizeOptions({
+        options,
+        context: this,
+      });
+
       /* istanbul ignore next */
-      if (DEBUG) {
+      if (options.debug) {
         validateDependency({
           context: this,
         });
@@ -84,7 +89,7 @@ function createMixin(Vue, options = {}) {
           if (this.$options.routeProps === void 0) return
 
           /* istanbul ignore next */
-          if (DEBUG) {
+          if (options.debug) {
             validateRoutePropsValue({
               normalizedRouteProps: this._routeProps.normalized,
               context: this,
@@ -110,6 +115,27 @@ function createMixin(Vue, options = {}) {
       },
     },
   }
+}
+
+function normalizeOptions ({
+  options = {},
+  context,
+}) {
+  if ({}.toString.call(options) !== '[object Object]') {
+    error(
+      `Options: ${options} should be an object`,
+      context,
+    );
+  }
+
+  if (options.inspect === void 0) {
+    options.inspect = false;
+  }
+  if (options.debug === void 0) {
+    options.debug = DEBUG;
+  }
+
+  return options
 }
 
 function validateDependency ({
