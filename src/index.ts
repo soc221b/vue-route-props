@@ -1,4 +1,4 @@
-import createMixin from './core.ts'
+import createMixin from './core'
 
 const install = function (Vue, options) {
   Vue.mixin(createMixin(Vue, options))
