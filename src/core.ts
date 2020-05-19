@@ -92,9 +92,17 @@ function createMixin(Vue, options) {
   }
 }
 
+enum Options {
+  inspect = 'inspect',
+  debug = 'debug',
+}
+
 export function normalizeOptions ({
   options = {},
   context,
+}: {
+  options: {[key in Options]?: boolean},
+  context: any
 }) {
   if ({}.toString.call(options) !== '[object Object]') {
     error(
