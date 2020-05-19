@@ -5,7 +5,7 @@ import {
   log,
   toString,
   has,
-} from './utils.ts'
+} from './utils'
 
 const stringifyableTypes = [null, Boolean, String, Number, Array, Object]
 
