@@ -1,57 +1,63 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import VueRouteProps from '../../../src/index'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import VueRouteProps from "../../../src/index";
 
-Vue.config.productionTip = false
-Vue.use(VueRouter)
-Vue.use(VueRouteProps)
+Vue.config.productionTip = false;
+Vue.use(VueRouter);
+Vue.use(VueRouteProps);
 
-let vm
-let router
-let spy
+let vm;
+let router;
+let spy;
 
 const validValueMapping = new Map([
   [null, null],
   [Boolean, false],
-  [String, ''],
+  [String, ""],
   [Number, 0],
   [Array, []],
-  [Object, {}]
-])
+  [Object, {}],
+]);
 
-describe('required', () => {
+describe("required", () => {
   beforeEach(() => {
     router = new VueRouter({
-      routes: [{
-        path: '/'
-      }],
-    })
-    router.replace({
-      query: {}
-    })
-      .catch(error => {
-        // ignore navigation to same route
+      routes: [
+        {
+          path: "/",
+        },
+      ],
+    });
+    router
+      .replace({
+        query: {},
       })
-    spy = jest.spyOn(console, 'error').mockImplementation()
-  })
+      .catch((error) => {
+        // ignore navigation to same route
+      });
+    spy = jest.spyOn(console, "error").mockImplementation();
+  });
 
   afterEach(() => {
-    vm.$destroy()
-    spy.mockClear()
-  })
+    vm.$destroy();
+    spy.mockClear();
+  });
 
-  test.each([...validValueMapping.values()])(`should allow any stringifiable value.`, (value) => {
-    router.replace({
-      query: {
-        prop: JSON.stringify(value)
-      }
-    })
-    vm = new Vue({
-      router,
-      routeProps: ['prop'],
-    })
-    expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) })
-    expect(vm.prop).toEqual(value)
-    expect(console.error).toHaveBeenCalledTimes(0)
-  })
-})
+  test.each([...validValueMapping.values()])(
+    `should allow any stringifiable value.`,
+    (value) => {
+      router.replace({
+        query: {
+          prop: JSON.stringify(value),
+        },
+      });
+      vm = new Vue({
+        router,
+        routeProps: ["prop"],
+      });
+      expect(vm.$route.query).toEqual({ prop: JSON.stringify(value) });
+      expect(vm.prop).toEqual(value);
+      expect(console.error).toHaveBeenCalledTimes(0);
+    }
+  );
+});

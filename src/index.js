@@ -1,4 +1,4 @@
-import createMixin from './core'
+import createMixin from "./core";
 
 /**
  * @param {any} Vue
@@ -7,11 +7,15 @@ import createMixin from './core'
  * @param {boolean} options.inspect
  * @returns {void}
  */
-const install = function (Vue, options = {
-  debug: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
-  inspect: false
-}) {
-  Vue.mixin(createMixin(Vue, options))
-}
+const install = function (
+  Vue,
+  options = {
+    debug:
+      process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test",
+    inspect: false,
+  }
+) {
+  Vue.mixin(createMixin(Vue, options));
+};
 
-export default { install }
+export default { install };
