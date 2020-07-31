@@ -1,10 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vue')) :
-  typeof define === 'function' && define.amd ? define(['vue'], factory) :
-  (global = global || self, global.VueChronos = factory(global.vue));
-}(this, (function (vue) { 'use strict';
-
-  vue = vue && vue.hasOwnProperty('default') ? vue['default'] : vue;
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.VueChronos = factory());
+}(this, (function () { 'use strict';
 
   const DEBUG = (
     typeof process === 'object' &&
@@ -122,7 +120,10 @@
   }
 
   function normalizeOptions ({
-    options = {},
+    options = {
+      inspect: false,
+      debug: false
+    },
     context,
   }) {
     if ({}.toString.call(options) !== '[object Object]') {
@@ -468,7 +469,17 @@
     });
   }
 
-  const install = function (Vue, options) {
+  /**
+   * @param {any} Vue
+   * @param {object} options
+   * @param {boolean} options.debug
+   * @param {boolean} options.inspect
+   * @returns {void}
+   */
+  const install = function (Vue, options = {
+    debug: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+    inspect: false
+  }) {
     Vue.mixin(createMixin(Vue, options));
   };
 

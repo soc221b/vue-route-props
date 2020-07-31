@@ -1,5 +1,3 @@
-import 'vue';
-
 const DEBUG = (
   typeof process === 'object' &&
   typeof process.env === 'object' &&
@@ -116,7 +114,10 @@ function createMixin(Vue, options) {
 }
 
 function normalizeOptions ({
-  options = {},
+  options = {
+    inspect: false,
+    debug: false
+  },
   context,
 }) {
   if ({}.toString.call(options) !== '[object Object]') {
@@ -462,7 +463,17 @@ function proxy ({
   });
 }
 
-const install = function (Vue, options) {
+/**
+ * @param {any} Vue
+ * @param {object} options
+ * @param {boolean} options.debug
+ * @param {boolean} options.inspect
+ * @returns {void}
+ */
+const install = function (Vue, options = {
+  debug: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  inspect: false
+}) {
   Vue.mixin(createMixin(Vue, options));
 };
 

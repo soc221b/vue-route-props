@@ -4,40 +4,40 @@ const terser = require('rollup-plugin-terser').terser
 
 const builds = {
   'esm-min': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.esm.min.js'),
     format: 'es',
     env: 'production',
     min: true,
   },
   'cjs-min': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.common.min.js'),
     format: 'cjs',
     env: 'production',
     min: true,
   },
   'umd-min': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.min.js'),
     format: 'umd',
     env: 'production',
     min: true,
   },
   'esm': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.esm.js'),
     format: 'es',
     env: 'production',
   },
   'cjs': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.common.js'),
     format: 'cjs',
     env: 'production',
   },
   'umd': {
-    src: resolve('src/index.ts'),
+    src: resolve('src/index.js'),
     dest: resolve('dist/vue-route-props.js'),
     format: 'umd',
     env: 'production',
