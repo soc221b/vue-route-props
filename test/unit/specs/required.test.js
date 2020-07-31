@@ -30,7 +30,7 @@ describe('required', () => {
     spy.mockClear()
   })
 
-  it(`should log error when requiredProp's required option is true but no corresponding query is given.`, () => {
+  it(`should log error when requiredProp's required option is true but no corresponding query is not given.`, () => {
     vm = new Vue({
       router,
       routeProps: {
