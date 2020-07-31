@@ -19,7 +19,8 @@
     "test": "jest --clear-cache && jest",
     "test:coverage": "rimraf coverage && yarn run test --coverage --coverage-directory coverage --coverage-reporters lcov --coverage-path-ignore-patterns dist",
     "test:watch": "yarn run test --watch-all",
-    "pre-publish": "node scripts/publish.js"
+    "pre-publish": "node scripts/publish.js",
+    "lint": "prettier . --check"
   },
   "jest": {
     "transform": {
@@ -43,7 +44,9 @@
     "@vue/server-test-utils": "^1.0.0-beta.32",
     "@vue/test-utils": "^1.0.0-beta.32",
     "babel-jest": "^25.1.0",
+    "husky": "^4.2.5",
     "jest": "^25.1.0",
+    "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
     "rollup": "^1.31.1",
     "rollup-plugin-terser": "^5.2.0",
@@ -56,5 +59,10 @@
   "peerDependencies": {
     "vue": "^2.6.11",
     "vue-router": "^3.3.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "git diff --exit-code && git diff --staged --exit-code && yarn lint && yarn test"
+    }
   }
 }
