@@ -1,49 +1,40 @@
 'use strict';
 
-const DEBUG = (
-  typeof process === 'object' &&
-  typeof process.env === 'object' &&
-  process.env.NODE_ENV !== 'production'
-);
+const DEBUG =
+  typeof process === "object" &&
+  typeof process.env === "object" &&
+  process.env.NODE_ENV !== "production";
 
 const error = (message, vm) => {
-  console.error(
-    `[VueRouteProps warn]: `,
-    message,
-    vm,
-  );
+  console.error(`[VueRouteProps warn]: `, message, vm);
 };
 
 const log = (message, vm) => {
-  console.log(
-    `[VueRouteProps log]: `,
-    message,
-    vm,
-  );
+  console.log(`[VueRouteProps log]: `, message, vm);
 };
 
 const toString = (value) => {
-  return {}.toString.call(value)
+  return {}.toString.call(value);
 };
 
 const has = (object, key) => {
-  return object.hasOwnProperty(key)
+  return object.hasOwnProperty(key);
 };
 
 const stringifyableTypes = [null, Boolean, String, Number, Array, Object];
 
-function returnUndefined () {
-  return void 0
+function returnUndefined() {
+  return void 0;
 }
 
-function returnTrue () {
-  return true
+function returnTrue() {
+  return true;
 }
 
 function createMixin(Vue, options) {
   return {
-    beforeCreate () {
-      if (this.$options.routeProps === void 0) return
+    beforeCreate() {
+      if (this.$options.routeProps === void 0) return;
 
       options = normalizeOptions({
         options,
@@ -75,16 +66,16 @@ function createMixin(Vue, options) {
 
         proxy({
           vm: this,
-          routeProp
+          routeProp,
         });
       }
     },
 
     watch: {
-      '$route': {
+      $route: {
         immediate: true,
-        handler () {
-          if (this.$options.routeProps === void 0) return
+        handler() {
+          if (this.$options.routeProps === void 0) return;
 
           /* istanbul ignore next */
           if (options.debug) {
@@ -104,29 +95,23 @@ function createMixin(Vue, options) {
           }
 
           if (options.inspect) {
-            log(
-              JSON.stringify(this._routeProps.computed, null, 2),
-              this,
-            );
+            log(JSON.stringify(this._routeProps.computed, null, 2), this);
           }
-        }
+        },
       },
     },
-  }
+  };
 }
 
-function normalizeOptions ({
+function normalizeOptions({
   options = {
     inspect: false,
-    debug: false
+    debug: false,
   },
   context,
 }) {
-  if ({}.toString.call(options) !== '[object Object]') {
-    error(
-      `Options: ${options} should be an object`,
-      context,
-    );
+  if ({}.toString.call(options) !== "[object Object]") {
+    error(`Options: ${options} should be an object`, context);
   }
 
   if (options.inspect === void 0) {
@@ -136,74 +121,64 @@ function normalizeOptions ({
     options.debug = DEBUG;
   }
 
-  return options
+  return options;
 }
 
-function validateDependency ({
-  context,
-}) {
+function validateDependency({ context }) {
   if (context.$router === void 0) {
-    error(
-      `Missing vue-router`,
-      context,
-    );
+    error(`Missing vue-router`, context);
   }
 }
 
-function validateRoutePropsOption ({
-  routeProps,
-  context,
-}) {
+function validateRoutePropsOption({ routeProps, context }) {
   let isValid = true;
 
-  if (toString(routeProps) === '[object Object]') {
+  if (toString(routeProps) === "[object Object]") {
     for (const prop in routeProps) {
-      if (toString(routeProps[prop]) === '[object Object]') {
-        isValid = (
-          isValid
-          && validateRoutePropsDefaultOption({
+      if (toString(routeProps[prop]) === "[object Object]") {
+        isValid =
+          isValid &&
+          validateRoutePropsDefaultOption({
             routeProps,
             prop,
             context,
-          })
-          && validateRoutePropsValidatorOption({
+          }) &&
+          validateRoutePropsValidatorOption({
             routeProps,
             prop,
             context,
-          })
-        );
+          });
       }
     }
   }
 
-  return isValid
+  return isValid;
 }
 
-function validateRoutePropsDefaultOption ({
-  routeProps,
-  prop,
-  context,
-}) {
-  if (toString(routeProps[prop].default) === '[object Object]' || toString(routeProps[prop].default) === '[object Array]') {
+function validateRoutePropsDefaultOption({ routeProps, prop, context }) {
+  if (
+    toString(routeProps[prop].default) === "[object Object]" ||
+    toString(routeProps[prop].default) === "[object Array]"
+  ) {
     error(
       `Invalid default value for routeProp "${prop}": routeProps with type Object/Array must use a factory function to return the default value.`,
-      context,
+      context
     );
-    return false
+    return false;
   }
-  return true
+  return true;
 }
 
-function validateRoutePropsValidatorOption ({
+function validateRoutePropsValidatorOption({
   routeProps,
   prop,
   context,
 }) {
   let isValid = true;
 
-  if (toString(routeProps[prop].validator) === '[object Function]') {
-    if (has(routeProps[prop], 'default')) {
-      if (toString(routeProps[prop].default) === '[object Function]') {
+  if (toString(routeProps[prop].validator) === "[object Function]") {
+    if (has(routeProps[prop], "default")) {
+      if (toString(routeProps[prop].default) === "[object Function]") {
         isValid = routeProps[prop].validator(routeProps[prop].default());
       } else {
         isValid = routeProps[prop].validator(routeProps[prop].default);
@@ -214,17 +189,15 @@ function validateRoutePropsValidatorOption ({
   if (isValid === false) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
-      context,
+      context
     );
   }
 
-  return isValid
+  return isValid;
 }
 
-function normalize ({
-  routeProps,
-}) {
-  if (toString(routeProps) === '[object Array]') {
+function normalize({ routeProps }) {
+  if (toString(routeProps) === "[object Array]") {
     /*
     convert routeProps: ['prop1', 'prop2']
     to      routeProps: {
@@ -241,7 +214,7 @@ function normalize ({
   }
 
   for (const prop in routeProps) {
-    if (toString(routeProps[prop]) === '[object Array]') {
+    if (toString(routeProps[prop]) === "[object Array]") {
       /*
       convert routeProps: {
                 prop1: [String, Number],
@@ -253,10 +226,9 @@ function normalize ({
               }
       */
       routeProps[prop] = {
-        type: routeProps[prop]
+        type: routeProps[prop],
       };
-    }
-    else if (toString(routeProps[prop]) !== '[object Object]') {
+    } else if (toString(routeProps[prop]) !== "[object Object]") {
       /*
       convert routeProps: {
                 prop1: String,
@@ -268,49 +240,42 @@ function normalize ({
               }
       */
       routeProps[prop] = {
-        type: [routeProps[prop]]
+        type: [routeProps[prop]],
       };
     }
   }
 
   for (const prop in routeProps) {
-    if (has(routeProps[prop], 'required') === false) {
+    if (has(routeProps[prop], "required") === false) {
       routeProps[prop].required = false;
     }
 
-    if (has(routeProps[prop], 'type') === false) {
+    if (has(routeProps[prop], "type") === false) {
       routeProps[prop].type = stringifyableTypes;
-    }
-    else if (toString(routeProps[prop].type) !== '[object Array]') {
+    } else if (toString(routeProps[prop].type) !== "[object Array]") {
       routeProps[prop].type = [routeProps[prop].type];
-    }
-    else if (routeProps[prop].type.length === 0) {
+    } else if (routeProps[prop].type.length === 0) {
       routeProps[prop].type = stringifyableTypes;
     }
 
-    if (has(routeProps[prop], 'default') === false) {
+    if (has(routeProps[prop], "default") === false) {
       routeProps[prop].default = returnUndefined;
-    }
-    else if (toString(routeProps[prop].default) !== '[object Function]') {
+    } else if (toString(routeProps[prop].default) !== "[object Function]") {
       const defaultValue = routeProps[prop].default;
       routeProps[prop].default = function () {
-        return defaultValue
+        return defaultValue;
       };
     }
 
-    if (has(routeProps[prop], 'validator') === false) {
+    if (has(routeProps[prop], "validator") === false) {
       routeProps[prop].validator = returnTrue;
     }
   }
 
-  return routeProps
+  return routeProps;
 }
 
-function generateData ({
-  normalizedRouteProps,
-  route,
-  context,
-}) {
+function generateData({ normalizedRouteProps, route, context }) {
   const data = {};
 
   for (const prop in normalizedRouteProps) {
@@ -319,63 +284,48 @@ function generateData ({
       : normalizedRouteProps[prop].default();
   }
 
-  return data
+  return data;
 }
 
-function validateRoutePropsValue ({
-  normalizedRouteProps,
-  context,
-}) {
+function validateRoutePropsValue({ normalizedRouteProps, context }) {
   let isValid = true;
 
   for (const prop in normalizedRouteProps) {
-    isValid = (
-      isValid
-      && validateRequired({
+    isValid =
+      isValid &&
+      validateRequired({
         normalizedRouteProps,
         prop,
         context,
-      })
-      && validateType({
+      }) &&
+      validateType({
         normalizedRouteProps,
         prop,
         context,
-      })
-      && validateCustom({
+      }) &&
+      validateCustom({
         normalizedRouteProps,
         prop,
         context,
-      })
-    );
+      });
   }
 
-  return isValid
+  return isValid;
 }
 
-function validateRequired ({
-  normalizedRouteProps,
-  prop,
-  context,
-}) {
+function validateRequired({ normalizedRouteProps, prop, context }) {
   const value = has(context.$route.query, prop)
     ? JSON.parse(context.$route.query[prop])
     : void 0;
 
   if (normalizedRouteProps[prop].required && value === void 0) {
-    error(
-      `Missing required routeProp: "${prop}"`,
-      context,
-    );
-    return false
+    error(`Missing required routeProp: "${prop}"`, context);
+    return false;
   }
-  return true
+  return true;
 }
 
-function validateType ({
-  normalizedRouteProps,
-  prop,
-  context,
-}) {
+function validateType({ normalizedRouteProps, prop, context }) {
   const value = has(context.$route.query, prop)
     ? JSON.parse(context.$route.query[prop])
     : normalizedRouteProps[prop].default();
@@ -386,13 +336,15 @@ function validateType ({
     if (normalizedRouteProps[prop].required === true) {
       isValid = false;
     }
-  }
-  else if (value === null) {
+  } else if (value === null) {
     if (normalizedRouteProps[prop].type.includes(null) === false) {
       isValid = false;
     }
-  }
-  else if (normalizedRouteProps[prop].type.includes(Object.getPrototypeOf(value).constructor) === false){
+  } else if (
+    normalizedRouteProps[prop].type.includes(
+      Object.getPrototypeOf(value).constructor
+    ) === false
+  ) {
     isValid = false;
   }
 
@@ -400,67 +352,58 @@ function validateType ({
     const type = [];
     for (const constructor of normalizedRouteProps[prop].type) {
       if (constructor === null) {
-        type.push('null');
-      }
-      else {
+        type.push("null");
+      } else {
         type.push(/function ([^(]+)/.exec(constructor.toString())[1]);
       }
     }
     const valueType = toString(value).slice(8, -1);
 
     error(
-      `Invalid routeProp: type check failed for routeProp "${prop}". Expected ${type.join(', ')}, got ${valueType} with value ${JSON.stringify(value)}.`,
-      context,
+      `Invalid routeProp: type check failed for routeProp "${prop}". Expected ${type.join(
+        ", "
+      )}, got ${valueType} with value ${JSON.stringify(value)}.`,
+      context
     );
   }
 
-  return isValid
+  return isValid;
 }
 
-function validateCustom ({
-  normalizedRouteProps,
-  prop,
-  context,
-}) {
+function validateCustom({ normalizedRouteProps, prop, context }) {
   const value = has(context.$route.query, prop)
     ? JSON.parse(context.$route.query[prop])
     : normalizedRouteProps[prop].default();
 
   if (
-    (
-      normalizedRouteProps[prop].required
-      || has(context.$route.query, prop)
-    )
-    && !normalizedRouteProps[prop].validator(value, prop)
+    (normalizedRouteProps[prop].required || has(context.$route.query, prop)) &&
+    !normalizedRouteProps[prop].validator(value, prop)
   ) {
     error(
       `Invalid routeProp: custom validator check failed for routeProp "${prop}".`,
-      context,
+      context
     );
-    return false
+    return false;
   }
 
-  return true
+  return true;
 }
 
-function proxy ({
-  vm,
-  routeProp,
-}) {
+function proxy({ vm, routeProp }) {
   Object.defineProperty(vm, routeProp, {
     configurable: true,
     enumerable: true,
-    set () {
+    set() {
       error(
         `Avoid mutating a routeProp directly since the value will be ` +
-        `overwritten whenever the route changes. ` +
-        `Instead, use a data or computed property based on the routeProp's ` +
-        `value. Prop being mutated: "${routeProp}"`,
-        vm,
+          `overwritten whenever the route changes. ` +
+          `Instead, use a data or computed property based on the routeProp's ` +
+          `value. Prop being mutated: "${routeProp}"`,
+        vm
       );
     },
-    get () {
-      return vm._routeProps.computed[routeProp]
+    get() {
+      return vm._routeProps.computed[routeProp];
     },
   });
 }
@@ -472,10 +415,14 @@ function proxy ({
  * @param {boolean} options.inspect
  * @returns {void}
  */
-const install = function (Vue, options = {
-  debug: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
-  inspect: false
-}) {
+const install = function (
+  Vue,
+  options = {
+    debug:
+      process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test",
+    inspect: false,
+  }
+) {
   Vue.mixin(createMixin(Vue, options));
 };
 
