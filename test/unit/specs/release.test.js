@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import VueRouteProps from "../../../dist/vue-route-props.esm.js";
+import * as VueRouteProps from "../../../dist/vue-route-props.esm.js";
 
 Vue.use(VueRouter);
 Vue.use(VueRouteProps);

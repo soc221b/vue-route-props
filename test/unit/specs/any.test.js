@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import VueRouteProps from "../../../src/index";
+import * as VueRouteProps from "../../../src/index";
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);

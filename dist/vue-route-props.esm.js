@@ -424,6 +424,4 @@ const install = function (
   Vue.mixin(createMixin(Vue, options));
 };
 
-var index = { install };
-
-export default index;
+export { install };

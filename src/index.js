@@ -18,4 +18,4 @@ const install = function (
   Vue.mixin(createMixin(Vue, options));
 };
 
-export default { install };
+export { install };

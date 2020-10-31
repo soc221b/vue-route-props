@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 const DEBUG =
   typeof process === "object" &&
   typeof process.env === "object" &&
@@ -426,6 +428,4 @@ const install = function (
   Vue.mixin(createMixin(Vue, options));
 };
 
-var index = { install };
-
-module.exports = index;
+exports.install = install;

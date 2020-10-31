@@ -1,7 +1,7 @@
 import Vue from "vue";
 import { mount } from "@vue/test-utils";
 import VueRouter from "vue-router";
-import VueRouteProps from "../../../src/index";
+import * as VueRouteProps from "../../../src/index";
 
 Vue.use(VueRouter);
 Vue.use(VueRouteProps);

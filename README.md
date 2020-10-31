@@ -24,7 +24,7 @@ In order to make route `stateful`(e.g, let user to copy one route, and paste in 
 ```javascript
 import Vue from "vue";
 import VueRouter from "vue-router";
-import VueRouteProps from "vue-route-props";
+import * as VueRouteProps from "vue-route-props";
 
 Vue.use(VueRouter);
 Vue.use(VueRouteProps);
