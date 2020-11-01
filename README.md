@@ -5,6 +5,7 @@ Automatically bind vue-router query to vm, APIs are mostly same as the Vue props
 [![npm version](https://img.shields.io/npm/v/vue-route-props)](https://www.npmjs.com/package/vue-route-props)
 [![CI](https://github.com/iendeavor/vue-route-props/workflows/CI/badge.svg?branch=develop)](https://github.com/iendeavor/vue-route-props/actions?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/iendeavor/vue-route-props/branch/develop/graph/badge.svg)](https://codecov.io/gh/iendeavor/vue-route-props)
+[![HitCount](http://hits.dwyl.com/iendeavor/vue-route-props.svg)](http://hits.dwyl.com/iendeavor/vue-route-props)
 
 ## Install
 
