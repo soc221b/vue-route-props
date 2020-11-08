@@ -9,6 +9,9 @@
   "module": "dist/vue-route-props.esm.min.js",
   "unpkg": "dist/vue-route-props.min.js",
   "jsdelivr": "dist/vue-route-props.min.js",
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "vue",
     "vue-router",
